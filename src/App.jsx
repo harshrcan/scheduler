@@ -14,6 +14,13 @@ const btn = {
   fontSize: 14, fontFamily: 'inherit',
 }
 
+function getInitials(name) {
+  if (!name) return '?'
+  const parts = name.trim().split(' ')
+  if (parts.length === 1) return parts[0][0].toUpperCase()
+  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase()
+}
+
 export default function App() {
   const [session, setSession] = useState(null)
   const [loadingAuth, setLoadingAuth] = useState(true)
@@ -49,7 +56,11 @@ export default function App() {
   }
 
   if (loadingAuth) return (
-    <div style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg)', color: 'var(--muted)', fontFamily: 'var(--font-sans)' }}>
+    <div style={{
+      height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center',
+      background: 'var(--bg)', color: 'var(--muted)', fontFamily: 'var(--font-sans)',
+      fontSize: 13,
+    }}>
       Loading...
     </div>
   )
@@ -59,7 +70,9 @@ export default function App() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', background: 'var(--bg)', fontFamily: 'var(--font-sans)', color: 'var(--text)' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 14px', background: 'var(--card)', borderBottom: '1px solid var(--border)', flexShrink: 0, flexWrap: 'wrap' }}>
+
         <span style={{ fontSize: 15, fontWeight: 700, color: 'var(--accent)', letterSpacing: '-0.5px', marginRight: 4 }}>dayframe</span>
+
         <button onClick={() => navigate(-1)} style={btn}>←</button>
         <span style={{ fontSize: 14, fontWeight: 500, color: 'var(--text)', minWidth: 200, textAlign: 'center' }}>
           {formatPeriod(baseDate, view)}
@@ -88,31 +101,31 @@ export default function App() {
           fontWeight: showChecklist ? 600 : 400,
         }}>☑ Checklist</button>
 
-       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-  {/* Avatar — shows photo if available, initials if not */}
-  <div style={{ position: 'relative' }}>
-    {session.user.user_metadata?.avatar_url ? (
-      <img
-        src={session.user.user_metadata.avatar_url}
-        alt="avatar"
-        style={{ width: 30, height: 30, borderRadius: '50%', border: '1px solid var(--border)', display: 'block' }}
-      />
-    ) : (
-      <div style={{
-        width: 30, height: 30, borderRadius: '50%',
-        background: 'var(--accent)', color: '#fff',
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-        fontSize: 12, fontWeight: 700, letterSpacing: '-0.3px',
-      }}>
-        {getInitials(session.user.user_metadata?.full_name || session.user.email)}
-      </div>
-    )}
-  </div>
-  <span style={{ fontSize: 12, color: 'var(--muted)', maxWidth: 120, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-    {session.user.user_metadata?.full_name?.split(' ')[0] || session.user.email?.split('@')[0]}
-  </span>
-  <button onClick={handleSignOut} style={{ ...btn, fontSize: 11, padding: '5px 10px' }}>Sign out</button>
-</div>
+        {/* User avatar + name + sign out */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <div style={{ position: 'relative' }}>
+            {session.user.user_metadata?.avatar_url ? (
+              <img
+                src={session.user.user_metadata.avatar_url}
+                alt="avatar"
+                style={{ width: 30, height: 30, borderRadius: '50%', border: '1px solid var(--border)', display: 'block' }}
+              />
+            ) : (
+              <div style={{
+                width: 30, height: 30, borderRadius: '50%',
+                background: 'var(--accent)', color: '#fff',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: 12, fontWeight: 700, letterSpacing: '-0.3px',
+              }}>
+                {getInitials(session.user.user_metadata?.full_name || session.user.email)}
+              </div>
+            )}
+          </div>
+          <span style={{ fontSize: 12, color: 'var(--muted)', maxWidth: 120, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            {session.user.user_metadata?.full_name?.split(' ')[0] || session.user.email?.split('@')[0]}
+          </span>
+          <button onClick={handleSignOut} style={{ ...btn, fontSize: 11, padding: '5px 10px' }}>Sign out</button>
+        </div>
 
         {syncing && <span style={{ fontSize: 11, color: 'var(--muted)' }}>syncing…</span>}
         {!syncing && <span style={{ fontSize: 11, color: '#3B6D11' }}>● synced</span>}
